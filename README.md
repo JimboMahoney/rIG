@@ -14,8 +14,8 @@ Edit the Login/Logout Section with your username, password and API key:
 ### Login/Logout
 #####################
 
-b   <- '{"identifier":"username", "password": "password"}'
-api <- "API_key"
+b   <- '{"identifier":"your_username", "password": "your_password"}'
+api <- "your_API_key"
 ```
 
 ### Limitations
