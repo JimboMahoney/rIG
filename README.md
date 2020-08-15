@@ -6,6 +6,13 @@ I wanted to create a method to get the basic details like cash balance and open 
 
 ### Usage
 Use the code snippets attached.
+<br>
+<br>
+Edit the Login/Logout Section with your username, password and API key:
+```
+b   <- '{"identifier":"username", "password": "password"}'
+api <- "API_key"
+```
 
 ### Limitations
 This is a work in progress and it's unlikely I will add any functionality other than what I need.
