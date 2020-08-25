@@ -153,7 +153,37 @@ get_current_positions <- function() {
 ### Get Positions
 #################################
 
-test <- get_current_positions()
+IGPositions <- get_current_positions()
+
+#####################################
+### Get prices / index / epic details
+#####################################
+
+# Returns a list of details from each market in the positions
+
+for (i in IGPositions$epics){
+  temp <- make_ig_request(path = paste0("markets/", i), api_version = 1) %>% httr::content()
+  assign(i, temp)
+}
+
+# Get relevant details from each of these markets
+Expiry <- NULL
+IndexName <- NULL
+IndexPrice <- NULL
+for (i in IGPositions$epics){
+  Expiry <- c(Expiry, get(i)$instrument$expiry)
+  IndexName <- c(IndexName, get(i)$instrument$name)
+  IndexPrice <- c(IndexPrice, get(i)$snapshot$bid)
+  
+}
+
+# Create Profit/Loss
+ProfitLoss <- (IndexPrice - IGPositions$opening_prices) * IGPositions$positions
+
+# Create new table like IG
+IGSummary <- as.data.frame(cbind(IndexName, Expiry, IGPositions$positions, IGPositions$opening_prices, IndexPrice, round(ProfitLoss, 2)))
+# Rename columns
+colnames(IGSummary) <- c("Market", "Expiry", "Size", "Opening", "Latest", "Profit/Loss")
 
 ########################
 ### Get balance
@@ -161,8 +191,16 @@ test <- get_current_positions()
 
 Account_Details <- make_ig_request(path = "accounts", api_version = 1) %>% httr::content()
 
-# Account Balance
-Account_Details$accounts[[1]]$balance
+# Account #1 here is CFD
+# Account #2 is Spread Bet
+
+# Account Balance / Deposit / PnL / Available
+Account_Details$accounts[[2]]$balance
+
+# IG Margin
+Account_Details$accounts[[2]]$balance$deposit
+# IG Cash
+Account_Details$accounts[[2]]$balance$available
 
 
 ########################
