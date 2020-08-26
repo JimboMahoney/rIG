@@ -165,6 +165,7 @@ for (i in IGPositions$epics){
   temp <- make_ig_request(path = paste0("markets/", i), api_version = 1) %>% httr::content()
   assign(i, temp)
 }
+rm(temp)
 
 # Get relevant details from each of these markets
 Expiry <- NULL
@@ -173,8 +174,14 @@ IndexPrice <- NULL
 for (i in IGPositions$epics){
   Expiry <- c(Expiry, get(i)$instrument$expiry)
   IndexName <- c(IndexName, get(i)$instrument$name)
-  IndexPrice <- c(IndexPrice, get(i)$snapshot$bid)
-  
+  # Are we long or short this market?
+  if(IGPositions$positions[grep(i, IGPositions$epics)] > 0){
+    # Get bid if long
+    IndexPrice <- c(IndexPrice, get(i)$snapshot$bid)
+  }else{
+    # or offer if short
+    IndexPrice <- c(IndexPrice, get(i)$snapshot$offer)
+  }
 }
 
 # Create Profit/Loss
